@@ -16,7 +16,8 @@
   },
   "types": "lib/index.d.ts",
   "files": [
-    "lib/"
+    "lib/",
+    "src/"
   ],
   "devDependencies": {
     "jasmine": "^3.3.1",
