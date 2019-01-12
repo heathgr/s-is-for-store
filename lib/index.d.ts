@@ -23,7 +23,7 @@ declare class Store<T> {
      * Updates the state based on the object passed to this function.
      * @param newState An object containing the keys and values of the state that will be updated.
      */
-    setState: (newState: Partial<T>) => void;
+    setState: (newState: Partial<T>) => Promise<T>;
     /**
      * Adds an update handler, a function that gets called when the state updates.
      * An unsubscribe function gets returned.
