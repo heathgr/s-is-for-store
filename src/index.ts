@@ -29,12 +29,17 @@ class Store<T> {
    * Updates the state based on the object passed to this function.
    * @param newState An object containing the keys and values of the state that will be updated.
    */
-  public setState = (newState: Partial<T>) => {
+  public setState = async (newState: Partial<T>) => {
+    // update the state
     this.state = {
       ...this.state,
       ...newState,
     }
-    this.subscribers.forEach(callback => callback(this.state))
+
+    // call the subscribers
+    await Promise.all(this.subscribers.map(subsciber => subsciber(this.state)))
+
+    return this.state
   }
 
   /**

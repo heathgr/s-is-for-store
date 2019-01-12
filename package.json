@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "test": "jest"
   },
   "types": "lib/index.d.ts",
   "files": [
@@ -20,8 +21,12 @@
     "src/"
   ],
   "devDependencies": {
-    "jasmine": "^3.3.1",
+    "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "@types/jest": "^23.3.12",
+    "jest": "^23.6.0"
   }
 }
