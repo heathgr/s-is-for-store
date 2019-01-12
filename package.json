@@ -1,17 +1,25 @@
 {
   "name": "s-is-for-store",
   "version": "0.0.1",
-  "description": "A very basic state container written in TypeScript.",
+  "description": "A no frills state container written in TypeScript.",
   "main": "lib/index.js",
   "author": "Grant Heath",
   "license": "MIT",
   "private": false,
-  "devDependencies": {
-    "jasmine": "^3.3.1",
-    "typescript": "^3.2.2"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heathgr/s-is-for-store.git"
   },
   "scripts": {
     "build": "tsc"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/"
+  ],
+  "devDependencies": {
+    "jasmine": "^3.3.1",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  }
 }

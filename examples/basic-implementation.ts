@@ -1,24 +1,3 @@
-# S is for Store
-
-A no frills state container written in TypeScript.
-
-## Installation
-
-Install via npm:
-
-``` shell
-npm install s-is-for-state
-```
-
-Or via yarn:
-
-``` shell
-yarn add s-is-for-state
-```
-
-## Usage
-
-``` ts
 import { createStore } from '../src/index'
 
 // Define an interface for the state.
@@ -85,6 +64,3 @@ No message is displayed.
 The unsubscribe function was called.
 As a result, updateHandler not longer gets called when the state updates.
 */
-```
-
-> Note: This example was written in TypeScript.  However, it would have worked just as well in JavaScript.
