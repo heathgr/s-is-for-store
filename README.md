@@ -7,19 +7,19 @@ A no frills state container written in TypeScript.
 Install via npm:
 
 ``` shell
-npm install s-is-for-state
+npm install s-is-for-store
 ```
 
 Or via yarn:
 
 ``` shell
-yarn add s-is-for-state
+yarn add s-is-for-store
 ```
 
 ## Usage
 
 ``` ts
-import { createStore } from '../src/index'
+import { createStore } from 's-is-for-store'
 
 // Define an interface for the state.
 interface State {
