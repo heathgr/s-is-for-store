@@ -2,6 +2,8 @@
 
 A no frills state container written in TypeScript.
 
+[![CircleCI](https://circleci.com/gh/heathgr/s-is-for-store.svg?style=svg)](https://circleci.com/gh/heathgr/s-is-for-store)
+
 ## Installation
 
 Install via npm:

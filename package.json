@@ -1,6 +1,6 @@
 {
   "name": "s-is-for-store",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A no frills state container written in TypeScript.",
   "main": "lib/index.js",
   "author": "Grant Heath",
@@ -20,12 +20,18 @@
     "lib/",
     "src/"
   ],
+  "keywords": [
+    "state",
+    "store",
+    "subscriber",
+    "predictable",
+    "immutable",
+    "functional"
+  ],
   "devDependencies": {
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
-    "typescript": "^3.2.2"
-  },
-  "dependencies": {
+    "typescript": "^3.2.2",
     "@types/jest": "^23.3.12",
     "jest": "^23.6.0"
   }
