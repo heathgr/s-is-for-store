@@ -73,4 +73,33 @@ describe('s-is-for-store', () => {
 
     expect(mockSubscriber2).toBeCalledWith({ someVal: false })
   })
+
+  it('Should run side effects.', async () => {
+    interface TestState {
+      count: number,
+      message: string,
+    }
+
+    const testState = {
+      count: 0,
+      message: 'hello',
+    }
+
+    const increment = (state: TestState, amount: number) => ({ count: state.count + amount })
+    // promise based increment function
+    const incrementP = (state: TestState, amount: number ) => new Promise((resolve) => {
+      resolve({ count: state.count + amount })
+    })
+    const store = createStore(testState)
+    const { getState, runEffect } = store
+
+    await runEffect(increment, 2)
+    expect(getState().count).toEqual(2)
+    await runEffect(increment, 5)
+    expect(getState().count).toEqual(7)
+    await runEffect(increment, 7)
+    expect(getState().count).toEqual(14)
+
+    expect(getState().message).toEqual('hello') // make sure the runEffect function handles partials correctly
+  })
 })

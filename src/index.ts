@@ -4,6 +4,8 @@
  */
 export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
+// TODO revist the Effect type and make sure this is the best way to handle the spread operator on function arguments
+export type Effect<T, A extends any[]> = (state: T, ...args: A) => Partial<T> | Promise<Partial<T>>
 
 /**
  * A class for a simple no frills state container.
@@ -40,6 +42,17 @@ class Store<T> {
     await Promise.all(this.subscribers.map(subsciber => subsciber(this.state)))
 
     return this.state
+  }
+
+  /**
+   * Runs an effect function.
+   * @param effect An effect function.  A function that accepts state as an argument.  It returns mutated state or a promise that will resolve mutated state.
+   */
+  public runEffect = async <A extends any[] = any>(effect: Effect<T, A>, ...args: A) => {
+    const state = this.getState()
+    const newState: Partial<T> = await effect(state, ...args)
+
+    this.setState(newState)
   }
 
   /**
