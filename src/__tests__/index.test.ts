@@ -14,14 +14,19 @@ describe('s-is-for-store', () => {
 
   // test effects
   const increment = (state: TestState , by: number) => ({
-    count: state.count + by
+    ...state,
+    count: state.count + by,
   })
 
-  const incrementPromiseBased = (state: TestState, by: number) => new Promise((resolve) => {
-    resolve({ count: state.count + by })
+  const incrementPromiseBased = (state: TestState, by: number) => new Promise<TestState>((resolve) => {
+    resolve({
+      ...state,
+      count: state.count + by,
+    })
   })
 
   const setMessage = (state: TestState, message: string) => ({
+    ...state,
     message: message
   })
 

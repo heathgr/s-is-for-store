@@ -2,7 +2,7 @@ export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
 // TODO revist the Effect type and make sure this is the best way to handle the spread operator on function arguments
-export type Effect<T, A extends any[]> = (state: T, ...args: A) => Partial<T> | Promise<Partial<T>>
+export type Effect<T, A extends any[] = any> = (state: T, ...args: A) => T | Promise<T>
 
 /**
  * A class for a simple no frills state container.
