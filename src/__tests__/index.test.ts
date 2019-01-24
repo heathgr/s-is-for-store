@@ -1,15 +1,56 @@
-import Store, { createStore } from '../index'
+import Store, { createStore, Effect } from '../index'
 
 describe('s-is-for-store', () => {
-  it('Should create a store instance with the correct initial state.', () => {
-    const testState = { testState: true }
-    const testStore = createStore(testState)
 
-    expect(testStore).toBeDefined()
-    expect(testStore).toBeInstanceOf(Store)
-    expect(testStore.getState()).toEqual(testState)
+  interface TestState {
+    message: string,
+    count: number,
+  }
+
+  const initialState = {
+    message: 'hello',
+    count: 0,
+  }
+
+  // test effects
+  const increment: Effect<TestState> = (state, by: number) => ({
+    count: state.count + by
   })
 
+  const incrementPromiseBased: Effect<TestState> = (state, by: number) => new Promise((resolve) => {
+    resolve({ count: state.count + by })
+  })
+
+  const setMessage: Effect<TestState> = (state, message: string) => ({
+    message: message
+  })
+
+  let testStore = createStore<TestState>(initialState)
+
+  beforeEach(() => {
+    testStore = createStore<TestState>(initialState)
+  })
+
+  it('Should create a store instance with the correct initial state.', () => {
+    expect(testStore).toBeDefined()
+    expect(testStore).toBeInstanceOf(Store)
+    expect(testStore.getState()).toEqual(initialState)
+  })
+
+  it('Should run effect functions.', async () => {
+    const { run , getState } = testStore
+
+    await run(increment, 2)
+    expect(getState().count).toEqual(2)
+    await run(increment, 5)
+    expect(getState().count).toEqual(7)
+    await run(incrementPromiseBased, 7) // make sure runEffect resolves promises correctly
+    expect(getState().count).toEqual(14)
+
+    expect(getState().message).toEqual('hello') // make sure the runEffect function handles partials correctly
+  })
+
+  /*
   it('Should update state correctly.', () => {
     const testState = {
       value1: 23,
@@ -73,33 +114,5 @@ describe('s-is-for-store', () => {
 
     expect(mockSubscriber2).toBeCalledWith({ someVal: false })
   })
-
-  it('Should run side effects.', async () => {
-    interface TestState {
-      count: number,
-      message: string,
-    }
-
-    const testState = {
-      count: 0,
-      message: 'hello',
-    }
-
-    const increment = (state: TestState, amount: number) => ({ count: state.count + amount })
-    // promise based increment function
-    const incrementP = (state: TestState, amount: number ) => new Promise((resolve) => {
-      resolve({ count: state.count + amount })
-    })
-    const store = createStore(testState)
-    const { getState, runEffect } = store
-
-    await runEffect(increment, 2)
-    expect(getState().count).toEqual(2)
-    await runEffect(increment, 5)
-    expect(getState().count).toEqual(7)
-    await runEffect(increment, 7)
-    expect(getState().count).toEqual(14)
-
-    expect(getState().message).toEqual('hello') // make sure the runEffect function handles partials correctly
-  })
+  */
 })
