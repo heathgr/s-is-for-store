@@ -13,15 +13,15 @@ describe('s-is-for-store', () => {
   }
 
   // test effects
-  const increment: Effect<TestState> = (state, by: number) => ({
+  const increment = (state: TestState , by: number) => ({
     count: state.count + by
   })
 
-  const incrementPromiseBased: Effect<TestState> = (state, by: number) => new Promise((resolve) => {
+  const incrementPromiseBased = (state: TestState, by: number) => new Promise((resolve) => {
     resolve({ count: state.count + by })
   })
 
-  const setMessage: Effect<TestState> = (state, message: string) => ({
+  const setMessage = (state: TestState, message: string) => ({
     message: message
   })
 
@@ -50,69 +50,37 @@ describe('s-is-for-store', () => {
     expect(getState().message).toEqual('hello') // make sure the runEffect function handles partials correctly
   })
 
-  /*
-  it('Should update state correctly.', () => {
-    const testState = {
-      value1: 23,
-      value2: 'hello',
-      value3: false,
-    }
-    const testStore = createStore(testState)
-
-    // make sure store was initialized correctly
-    expect(testStore.getState()).toEqual(testState)
-
-    // make sure state can be set correctly
-    const expectedState1 = {
-      value1: 23,
-      value2: 'good bye',
-      value3: false,
-    }
-
-    testStore.setState({ value2: 'good bye' })
-
-    expect(testStore.getState()).toEqual(expectedState1)
-
-    const expectedState2 = {
-      value1: -8,
-      value2: 'good bye',
-      value3: true,
-    }
-
-    testStore.setState({ value1: -8, value3: true })
-
-    expect(testStore.getState()).toEqual(expectedState2)
-  })
-
-  it('Should handle subscribers correctly.', () => {
-    const testState = { someVal: true }
-    const testStore = createStore(testState)
+  it('Should handle subscribers correctly.', async () => {
+    const { run } = testStore
     const mockSubscriber1 = jest.fn()
     const mockSubscriber2 = jest.fn()
 
+    const testMessage1 = 'Turtles do not like peanut butter.'
+    const testMessage2 = 'Unicorns do not like ice cream.'
+    const testMessage3 = 'Cats do not like humans.'
+
     const unsubcriber1 = testStore.subscribe(mockSubscriber1)
-    testStore.setState({ someVal: false })
+    await run(setMessage, testMessage1)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(1)
-    expect(mockSubscriber1).toBeCalledWith({ someVal: false })
+    expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage1 })
 
     const unsibscribe2 = testStore.subscribe(mockSubscriber2)
-    testStore.setState({ someVal: true })
+    await run(setMessage, testMessage2)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(1)
 
-    expect(mockSubscriber1).toBeCalledWith({ someVal: true })
-    expect(mockSubscriber2).toBeCalledWith({ someVal: true })
+    expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage2 })
+    expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage2 })
 
     unsubcriber1()
 
-    testStore.setState({ someVal: false })
+    await run(setMessage, testMessage3)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(2)
 
-    expect(mockSubscriber2).toBeCalledWith({ someVal: false })
+    expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage3 })
   })
-  */
 })
