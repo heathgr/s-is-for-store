@@ -1,4 +1,4 @@
-import Store, { createStore, Effect } from '../index'
+import Store, { createStore, Resolver } from '../index'
 
 describe('s-is-for-store', () => {
 
@@ -12,7 +12,7 @@ describe('s-is-for-store', () => {
     count: 0,
   }
 
-  // test effects
+  // test resolvers
   const increment = (getState: () => TestState , by: number) => {
     const state = getState()
 
@@ -48,17 +48,15 @@ describe('s-is-for-store', () => {
     expect(testStore.getState()).toEqual(initialState)
   })
 
-  it('Should run effect functions.', async () => {
+  it('Should state resolvers.', async () => {
     const { run , getState } = testStore
 
     await run(increment, 2)
     expect(getState().count).toEqual(2)
     await run(increment, 5)
     expect(getState().count).toEqual(7)
-    await run(incrementPromiseBased, 7) // make sure runEffect resolves promises correctly
+    await run(incrementPromiseBased, 7) // make sure the resolver runner resolves promises correctly
     expect(getState().count).toEqual(14)
-
-    expect(getState().message).toEqual('hello') // make sure the runEffect function handles partials correctly
   })
 
   it('Should handle subscribers correctly.', async () => {

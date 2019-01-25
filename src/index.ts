@@ -1,8 +1,8 @@
 export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
-// TODO revist the Effect type and make sure this is the best way to handle the spread operator on function arguments
-export type Effect<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
+// TODO revist the Resolver type and make sure this is the best way to handle the spread operator on function arguments
+export type Resolver<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
 
 /**
  * A class for a simple no frills state container.
@@ -25,13 +25,13 @@ class Store<T> {
   public getState = (): T => this.state
 
   /**
-   * Runs an effect function.
-   * @param effect An effect function.  A function that accepts state as an argument.  It returns mutated state or a promise that will resolve mutated state.
+   * Runs a resolver function.
+   * @param resolver A state resolver function.  A function that takes the getState function as an argument.  It returns mutated state or a promise that will resolve mutated state.
    * @returns The new state
    */
-  public run = async <A extends any[] = any>(effect: Effect<T, A>, ...args: A) => {
+  public run = async <A extends any[] = any>(resolver: Resolver<T, A>, ...args: A) => {
     const state = this.getState()
-    const newState: T = await effect(this.getState, ...args)
+    const newState: T = await resolver(this.getState, ...args)
 
     // update the state
     this.state = {
