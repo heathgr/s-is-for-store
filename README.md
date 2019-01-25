@@ -1,8 +1,12 @@
 # S is for Store
 
-A no frills state container written in TypeScript.
-
 [![CircleCI](https://circleci.com/gh/heathgr/s-is-for-store.svg?style=svg)](https://circleci.com/gh/heathgr/s-is-for-store)
+
+S is for Store is a state container for JavaScript applications. It offers straighforward state managment with the following features:
+
+- Simmple architecture.  Setup projects without having to rely on an oppressive amount of boilerplate.
+- Side effects are easily managed.  Make http requests without having to rely on middleware.
+- Written in TypeScript so type support is available out of the box.
 
 ## Installation
 
@@ -18,75 +22,47 @@ Or via yarn:
 yarn add s-is-for-store
 ```
 
-## Usage
+## Basic Usage
 
 ``` ts
 import { createStore } from 's-is-for-store'
 
-// Define an interface for the state.
-interface State {
-  messageOne: string,
-  messageTwo: string,
-}
+/**
+ * The state's interface.
+ * This isn't neccessary if you aren't using TypeScript.
+ * But if you are using TypeScript s-is-for-store offers type support out of the box.
+ */
+interface State { message: string }
 
-// The initial state object.
-const initialState: State = {
-  messageOne: 'Hello',
-  messageTwo: ':(',
-}
+/**
+ * This creates a new store.  The store's initial state is { message: '' }
+ */
+const store = createStore<State>({ message: '' })
 
-// Create a new store with the initial state object.
-const store = createStore<State>(initialState)
+/**
+ * This is a state resolver.
+ * A state resolver is a function that is the state.
+ * The resolver will return the new state.
+ * A resolver can also return a promise that will resolve the new state.
+ * A resolver can be an async function.
+ */
+const setMessage = (state: State, message: string) => ({ ...state, message })
 
-// This function will be called when the state updates.
-const updateHandler = (state: State) => {
-  const { messageOne, messageTwo } = state
+/**
+ * This is a subscriber.
+ * When the state is modified, the subscriber gets called with the new state.
+ */
+const subscriber = (state: State) => console.log(state)
 
-  console.log(`Value for message one: ${messageOne}`)
-  console.log(`Value for message two: ${messageTwo}`)
-}
+/**
+ * The subscriber function is now subscribed to the store.
+ */
+store.subscribe(subscriber)
 
-// Register updateHandler with the store.
-// store.subscribe returns an unsubscribe function.
-const unsubscribe = store.subscribe(updateHandler)
+store.run(setMessage, 'Hello World')
+// Outputs { message: 'Hello World' }
 
-// Updates the value for the state's `messageOne` key.
-store.setState({
-  messageOne: 'Hello World!'
-})
+store.run(setMessage, 'Hello Again')
+// Outputs { message: 'Hello Again' }
 
-/*
-Because the state has updated, the folowing is outputted:
-
-Value for message one: Hello World!
-Value for message two: :(
-*/
-
-// Updates the values for both the `messageOne` and 'messageTwo' keys.
-store.setState({
-  messageOne: 'Good Bye World!',
-  messageTwo: ':)'
-})
-
-/*
-Because the state has updated, the folowing is outputted:
-
-Value for message one: Good Bye World!
-Value for message two: :)
-*/
-
-unsubscribe()
-
-// Updates the value for the state's `messageTwo` key.
-store.setState({
-  messageTwo: 'This message will not be displayed.'
-})
-
-/*
-No message is displayed.
-The unsubscribe function was called.
-As a result, updateHandler not longer gets called when the state updates.
-*/
 ```
-
-> Note: This example was written in TypeScript.  However, it would have worked just as well in JavaScript.

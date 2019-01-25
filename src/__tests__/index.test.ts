@@ -13,20 +13,26 @@ describe('s-is-for-store', () => {
   }
 
   // test effects
-  const increment = (state: TestState , by: number) => ({
-    ...state,
-    count: state.count + by,
-  })
+  const increment = (getState: () => TestState , by: number) => {
+    const state = getState()
 
-  const incrementPromiseBased = (state: TestState, by: number) => new Promise<TestState>((resolve) => {
+    return {
+      ...state,
+      count: state.count + by,
+    }
+  }
+
+  const incrementPromiseBased = (getState: () => TestState, by: number) => new Promise<TestState>((resolve) => {
+    const state = getState()
+
     resolve({
       ...state,
       count: state.count + by,
     })
   })
 
-  const setMessage = (state: TestState, message: string) => ({
-    ...state,
+  const setMessage = (getState: () => TestState, message: string) => ({
+    ...getState(),
     message: message
   })
 

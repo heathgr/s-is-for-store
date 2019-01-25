@@ -2,7 +2,7 @@ export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
 // TODO revist the Effect type and make sure this is the best way to handle the spread operator on function arguments
-export type Effect<T, A extends any[] = any> = (state: T, ...args: A) => T | Promise<T>
+export type Effect<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
 
 /**
  * A class for a simple no frills state container.
@@ -31,7 +31,7 @@ class Store<T> {
    */
   public run = async <A extends any[] = any>(effect: Effect<T, A>, ...args: A) => {
     const state = this.getState()
-    const newState: Partial<T> = await effect(state, ...args)
+    const newState: T = await effect(this.getState, ...args)
 
     // update the state
     this.state = {
