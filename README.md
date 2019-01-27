@@ -2,9 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/heathgr/s-is-for-store.svg?style=svg)](https://circleci.com/gh/heathgr/s-is-for-store)
 
-S is for Store is a state container for JavaScript applications. It offers straighforward state managment with the following features:
+S is for Store is a state container for JavaScript applications. It offers straightforward state management with the following features:
 
-- Simmple architecture.  Setup projects without having to rely on an oppressive amount of boilerplate.
+- Simple architecture.  Setup projects without having to rely on an oppressive amount of boilerplate.
 - Side effects are easily managed.  Make http requests without having to rely on middleware.
 - Written in TypeScript so type support is available out of the box.
 
@@ -66,3 +66,7 @@ store.run(setMessage, 'Hello Again')
 // Outputs { message: 'Hello Again' }
 
 ```
+
+## A Note to 0.x.x Users
+
+Version 1.0.0 introduces the concept of state resolvers.  Moving forward state resolvers are going to be the only way to modify state.  As such the `setState` method has been removed.

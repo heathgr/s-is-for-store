@@ -1,7 +1,7 @@
 export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
-// TODO revist the Resolver type and make sure this is the best way to handle the spread operator on function arguments
+// TODO revisit the Resolver type and make sure this is the best way to handle the spread operator on function arguments
 export type Resolver<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
 
 /**
@@ -40,7 +40,7 @@ class Store<T> {
     }
 
     // call the subscribers
-    await Promise.all(this.subscribers.map(subsciber => subsciber(this.state)))
+    await Promise.all(this.subscribers.map(subscriber => subscriber(this.state)))
 
     return this.state
   }
@@ -60,7 +60,7 @@ class Store<T> {
 }
 
 /**
- * Returns a new store object.  A convienience function that is the equivalent to `new Store<T>(initialState)`.
+ * Returns a new store object.  A convenience function that is the equivalent to `new Store<T>(initialState)`.
  * @param initialState The store's initial state.
  */
 export const createStore = <T>(initialState: T) => new Store(initialState)
