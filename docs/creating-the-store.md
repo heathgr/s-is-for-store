@@ -1,19 +1,16 @@
-{% codetabs name="TypeScript", type="ts" -%}
-const store = createStore({ message: '' })
-{%- language name="JavaScript", type="js" -%}
-const store = createStore({ message: '' })
-{%- endcodetabs %}
 
+{% tabs %}
 
-{% tabs first="First Tab", second="Second Tab", third="Third Tab" %}
+{% tab title="1" %}
+``` ts
+const store = createStore({})
+```
+{% endtab %}
 
-{% content "first" %}
-Content for first tab ...
-
-{% content "second" %}
-Content for second tab ...
-
-{% content "third" %}
-Content for third tab ...
+{% tab title="2" %}
+``` js
+const store = createStore({})
+```
+{% endtab %}
 
 {% endtabs %}
