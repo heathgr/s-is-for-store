@@ -29,7 +29,7 @@ import { createStore } from 's-is-for-store'
 
 /**
  * The state's interface.
- * This isn't neccessary if you aren't using TypeScript.
+ * This isn't necessary if you aren't using TypeScript.
  * But if you are using TypeScript s-is-for-store offers type support out of the box.
  */
 interface State { message: string }
