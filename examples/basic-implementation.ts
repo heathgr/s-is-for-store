@@ -1,66 +1,38 @@
 import { createStore } from '../src/index'
 
-// Define an interface for the state.
-interface State {
-  messageOne: string,
-  messageTwo: string,
-}
+/**
+ * The state's interface.
+ * This isn't neccessary if you aren't using TypeScript.
+ * But if you are using TypeScript s-is-for-store offers type support out of the box.
+ */
+interface State { message: string }
 
-// The initial state object.
-const initialState: State = {
-  messageOne: 'Hello',
-  messageTwo: ':(',
-}
+/**
+ * This creates a new store.  The store's initial state is { message: '' }
+ */
+const store = createStore<State>({ message: '' })
 
-// Create a new store with the initial state object.
-const store = createStore<State>(initialState)
+/**
+ * This is a state resolver.
+ * A state resolver is a function that is the state.
+ * The resolver will return the new state.
+ * A resolver can also return a promise that will resolve the new state.
+ */
+const setMessage = (getState: () => State, message: string) => ({ ...getState(), message })
 
-// This function will be called when the state updates.
-const updateHandler = (state: State) => {
-  const { messageOne, messageTwo } = state
+/**
+ * This is a subscriber.
+ * When the state is modified, the subscriber gets called with the new state.
+ */
+const subscriber = (state: State) => console.log(state)
 
-  console.log(`Value for message one: ${messageOne}`)
-  console.log(`Value for message two: ${messageTwo}`)
-}
+/**
+ * The subscriber function is now subscribed to the store.
+ */
+store.subscribe(subscriber)
 
-// Register updateHandler with the store.
-// store.subscribe returns an unsubscribe function.
-const unsubscribe = store.subscribe(updateHandler)
+store.run(setMessage, 'Hello World')
+// Outputs { message: 'Hello World' }
 
-// Updates the value for the state's `messageOne` key.
-store.setState({
-  messageOne: 'Hello World!'
-})
-
-/*
-Because the state has updated, the folowing is outputted:
-
-Value for message one: Hello World!
-Value for message two: :(
-*/
-
-// Updates the values for both the `messageOne` and 'messageTwo' keys.
-store.setState({
-  messageOne: 'Good Bye World!',
-  messageTwo: ':)'
-})
-
-/*
-Because the state has updated, the folowing is outputted:
-
-Value for message one: Good Bye World!
-Value for message two: :)
-*/
-
-unsubscribe()
-
-// Updates the value for the state's `messageTwo` key.
-store.setState({
-  messageTwo: 'This message will not be displayed.'
-})
-
-/*
-No message is displayed.
-The unsubscribe function was called.
-As a result, updateHandler not longer gets called when the state updates.
-*/
+store.run(setMessage, 'Hello Again')
+// Outputs { message: 'Hello Again' }

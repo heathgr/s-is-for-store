@@ -1,9 +1,8 @@
-/**
- * When the state gets updated, the subscriber functions get called.
- * The new state is called as a parameter.
- */
 export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
+
+// TODO revisit the Resolver type and make sure this is the best way to handle the spread operator on function arguments
+export type Resolver<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
 
 /**
  * A class for a simple no frills state container.
@@ -26,10 +25,14 @@ class Store<T> {
   public getState = (): T => this.state
 
   /**
-   * Updates the state based on the object passed to this function.
-   * @param newState An object containing the keys and values of the state that will be updated.
+   * Runs a resolver function.
+   * @param resolver A state resolver function.  A function that takes the getState function as an argument.  It returns mutated state or a promise that will resolve mutated state.
+   * @returns The new state
    */
-  public setState = async (newState: Partial<T>) => {
+  public run = async <A extends any[] = any>(resolver: Resolver<T, A>, ...args: A) => {
+    const state = this.getState()
+    const newState: T = await resolver(this.getState, ...args)
+
     // update the state
     this.state = {
       ...this.state,
@@ -37,7 +40,7 @@ class Store<T> {
     }
 
     // call the subscribers
-    await Promise.all(this.subscribers.map(subsciber => subsciber(this.state)))
+    await Promise.all(this.subscribers.map(subscriber => subscriber(this.state)))
 
     return this.state
   }
@@ -57,7 +60,7 @@ class Store<T> {
 }
 
 /**
- * Returns a new store object.  A convienience function that is the equivalent to `new Store<T>(initialState)`.
+ * Returns a new store object.  A convenience function that is the equivalent to `new Store<T>(initialState)`.
  * @param initialState The store's initial state.
  */
 export const createStore = <T>(initialState: T) => new Store(initialState)

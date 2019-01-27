@@ -1,76 +1,95 @@
-import Store, { createStore } from '../index'
+import Store, { createStore, Resolver } from '../index'
 
 describe('s-is-for-store', () => {
-  it('Should create a store instance with the correct initial state.', () => {
-    const testState = { testState: true }
-    const testStore = createStore(testState)
 
+  interface TestState {
+    message: string,
+    count: number,
+  }
+
+  const initialState = {
+    message: 'hello',
+    count: 0,
+  }
+
+  // test resolvers
+  const increment = (getState: () => TestState , by: number) => {
+    const state = getState()
+
+    return {
+      ...state,
+      count: state.count + by,
+    }
+  }
+
+  const incrementPromiseBased = (getState: () => TestState, by: number) => new Promise<TestState>((resolve) => {
+    const state = getState()
+
+    resolve({
+      ...state,
+      count: state.count + by,
+    })
+  })
+
+  const setMessage = (getState: () => TestState, message: string) => ({
+    ...getState(),
+    message: message
+  })
+
+  let testStore = createStore<TestState>(initialState)
+
+  beforeEach(() => {
+    testStore = createStore<TestState>(initialState)
+  })
+
+  it('Should create a store instance with the correct initial state.', () => {
     expect(testStore).toBeDefined()
     expect(testStore).toBeInstanceOf(Store)
-    expect(testStore.getState()).toEqual(testState)
+    expect(testStore.getState()).toEqual(initialState)
   })
 
-  it('Should update state correctly.', () => {
-    const testState = {
-      value1: 23,
-      value2: 'hello',
-      value3: false,
-    }
-    const testStore = createStore(testState)
+  it('Should state resolvers.', async () => {
+    const { run , getState } = testStore
 
-    // make sure store was initialized correctly
-    expect(testStore.getState()).toEqual(testState)
-
-    // make sure state can be set correctly
-    const expectedState1 = {
-      value1: 23,
-      value2: 'good bye',
-      value3: false,
-    }
-
-    testStore.setState({ value2: 'good bye' })
-
-    expect(testStore.getState()).toEqual(expectedState1)
-
-    const expectedState2 = {
-      value1: -8,
-      value2: 'good bye',
-      value3: true,
-    }
-
-    testStore.setState({ value1: -8, value3: true })
-
-    expect(testStore.getState()).toEqual(expectedState2)
+    await run(increment, 2)
+    expect(getState().count).toEqual(2)
+    await run(increment, 5)
+    expect(getState().count).toEqual(7)
+    await run(incrementPromiseBased, 7) // make sure the resolver runner resolves promises correctly
+    expect(getState().count).toEqual(14)
   })
 
-  it('Should handle subscribers correctly.', () => {
-    const testState = { someVal: true }
-    const testStore = createStore(testState)
+  it('Should handle subscribers correctly.', async () => {
+    const { run } = testStore
     const mockSubscriber1 = jest.fn()
     const mockSubscriber2 = jest.fn()
 
+    const testMessage1 = 'Turtles do not like peanut butter.'
+    const testMessage2 = 'Unicorns do not like ice cream.'
+    const testMessage3 = 'Cats do not like humans.'
+
     const unsubcriber1 = testStore.subscribe(mockSubscriber1)
-    testStore.setState({ someVal: false })
+    await run(setMessage, testMessage1)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(1)
-    expect(mockSubscriber1).toBeCalledWith({ someVal: false })
+    expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage1 })
 
     const unsibscribe2 = testStore.subscribe(mockSubscriber2)
-    testStore.setState({ someVal: true })
+    await run(setMessage, testMessage2)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(1)
 
-    expect(mockSubscriber1).toBeCalledWith({ someVal: true })
-    expect(mockSubscriber2).toBeCalledWith({ someVal: true })
+    expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage2 })
+    expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage2 })
 
     unsubcriber1()
 
-    testStore.setState({ someVal: false })
+    await run(setMessage, testMessage3)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(2)
 
-    expect(mockSubscriber2).toBeCalledWith({ someVal: false })
+    expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage3 })
   })
 })
