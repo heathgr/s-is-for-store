@@ -1,4 +1,4 @@
-import Store, { createStore, Resolver } from '../index'
+import Store, { createStore } from '../index'
 
 describe('s-is-for-store', () => {
 
@@ -12,34 +12,43 @@ describe('s-is-for-store', () => {
     count: 0,
   }
 
-  // test resolvers
-  const increment = (getState: () => TestState , by: number) => {
-    const state = getState()
-
-    return {
-      ...state,
-      count: state.count + by,
-    }
-  }
-
-  const incrementPromiseBased = (getState: () => TestState, by: number) => new Promise<TestState>((resolve) => {
-    const state = getState()
-
-    resolve({
-      ...state,
-      count: state.count + by,
-    })
-  })
-
-  const setMessage = (getState: () => TestState, message: string) => ({
-    ...getState(),
-    message: message
-  })
-
   let testStore = createStore<TestState>(initialState)
+
+  // test state resolvers
+  // these will be recrated before each test
+  let increment: (by: number) => Promise<TestState>
+  let incrementPromiseBased:  (by: number) => Promise<TestState>
+  let setMessage:   (message: string) => Promise<TestState>
 
   beforeEach(() => {
     testStore = createStore<TestState>(initialState)
+
+    const { resolveState } = testStore
+
+    increment = (by: number) => resolveState((getState) => {
+      const state = getState()
+
+      return {
+        ...state,
+        count: state.count + by,
+      }
+    })
+
+    incrementPromiseBased = (by: number) => resolveState((getState) => {
+      const state = getState()
+
+      return new Promise((resolve) => {
+        resolve({
+          ...state,
+          count: state.count + by
+        })
+      })
+    })
+
+    setMessage = (message: string) => resolveState((getState) => ({
+      ...getState(),
+      message,
+    }))
   })
 
   it('Should create a store instance with the correct initial state.', () => {
@@ -48,19 +57,18 @@ describe('s-is-for-store', () => {
     expect(testStore.getState()).toEqual(initialState)
   })
 
-  it('Should state resolvers.', async () => {
-    const { run , getState } = testStore
+  it('Should resolve state.', async () => {
+    const { getState } = testStore
 
-    await run(increment, 2)
+    await increment(2)
     expect(getState().count).toEqual(2)
-    await run(increment, 5)
+    await increment(5)
     expect(getState().count).toEqual(7)
-    await run(incrementPromiseBased, 7) // make sure the resolver runner resolves promises correctly
+    await incrementPromiseBased(7) // make sure the resolver runner resolves promises correctly
     expect(getState().count).toEqual(14)
   })
 
   it('Should handle subscribers correctly.', async () => {
-    const { run } = testStore
     const mockSubscriber1 = jest.fn()
     const mockSubscriber2 = jest.fn()
 
@@ -68,14 +76,14 @@ describe('s-is-for-store', () => {
     const testMessage2 = 'Unicorns do not like ice cream.'
     const testMessage3 = 'Cats do not like humans.'
 
-    const unsubcriber1 = testStore.subscribe(mockSubscriber1)
-    await run(setMessage, testMessage1)
+    const unsubscriber_1 = testStore.subscribe(mockSubscriber1)
+    await setMessage(testMessage1)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(1)
     expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage1 })
 
-    const unsibscribe2 = testStore.subscribe(mockSubscriber2)
-    await run(setMessage, testMessage2)
+    const unsubscriber_2 = testStore.subscribe(mockSubscriber2)
+    await setMessage(testMessage2)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(1)
@@ -83,13 +91,20 @@ describe('s-is-for-store', () => {
     expect(mockSubscriber1).toBeCalledWith({ count: 0, message: testMessage2 })
     expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage2 })
 
-    unsubcriber1()
+    unsubscriber_1()
 
-    await run(setMessage, testMessage3)
+    await setMessage(testMessage3)
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(2)
 
     expect(mockSubscriber2).toBeCalledWith({ count: 0, message: testMessage3 })
+
+    unsubscriber_2()
+
+    await setMessage('Developers do not like AngularJS')
+
+    expect(mockSubscriber1).toHaveBeenCalledTimes(2)
+    expect(mockSubscriber2).toHaveBeenCalledTimes(2)
   })
 })

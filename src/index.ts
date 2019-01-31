@@ -1,9 +1,8 @@
 export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
-// TODO revisit the Resolver type and make sure this is the best way to handle the spread operator on function arguments
-export type Resolver<T, A extends any[] = any> = (getState: () => T, ...args: A) => T | Promise<T>
-
+export type GetState<T> = () => T
+export type StateResolverCallback<T> = (getState: GetState<T>) => T | Promise<T>
 /**
  * A class for a simple no frills state container.
  */
@@ -21,23 +20,20 @@ class Store<T> {
 
   /**
    * Returns the current state.
+   * @returns The current state.
    */
-  public getState = (): T => this.state
+  public getState = () => this.state
 
   /**
-   * Runs a resolver function.
-   * @param resolver A state resolver function.  A function that takes the getState function as an argument.  It returns mutated state or a promise that will resolve mutated state.
-   * @returns The new state
+   * Calls the provided callback with the getState function as a parameter.
+   * The state then gets replaced with the value returned by the callback.
+   * @returns The updated state.
    */
-  public run = async <A extends any[] = any>(resolver: Resolver<T, A>, ...args: A) => {
-    const state = this.getState()
-    const newState: T = await resolver(this.getState, ...args)
+  public resolveState = async (cb: StateResolverCallback<T>) => {
+    const newState = await cb(this.getState)
 
     // update the state
-    this.state = {
-      ...this.state,
-      ...newState,
-    }
+    this.state = newState
 
     // call the subscribers
     await Promise.all(this.subscribers.map(subscriber => subscriber(this.state)))

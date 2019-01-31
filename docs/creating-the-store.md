@@ -1,13 +1,15 @@
 
+
+
 {% tabs %}
 
-{% tab title="1" %}
+{% tab title="TypeScript" %}
 ``` ts
 const store = createStore({})
 ```
 {% endtab %}
 
-{% tab title="2" %}
+{% tab title="JavaScript" %}
 ``` js
 const store = createStore({})
 ```

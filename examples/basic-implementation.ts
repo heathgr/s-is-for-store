@@ -2,7 +2,7 @@ import { createStore } from '../src/index'
 
 /**
  * The state's interface.
- * This isn't neccessary if you aren't using TypeScript.
+ * This isn't necessary if you aren't using TypeScript.
  * But if you are using TypeScript s-is-for-store offers type support out of the box.
  */
 interface State { message: string }
@@ -31,8 +31,13 @@ const subscriber = (state: State) => console.log(state)
  */
 store.subscribe(subscriber)
 
-store.run(setMessage, 'Hello World')
+/**
+ * A resolver function is a function that takes the getState function as a parameter.
+ * The resolver function must return the updated state or a promise that will resolve the updated state.
+ * The resolveState method runs a resolver function and sets the returned value as the new state.
+ */
+store.resolveState((getState) => ({ ...getState(), message: 'Hello World' }))
 // Outputs { message: 'Hello World' }
 
-store.run(setMessage, 'Hello Again')
+store.resolveState((getState) => ({...getState(), message: 'Hello Again' }))
 // Outputs { message: 'Hello Again' }
