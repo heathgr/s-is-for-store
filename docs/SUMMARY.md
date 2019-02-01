@@ -3,7 +3,7 @@
 ## Tutorial
 
 - [Introduction](tutorial-introduction.md)
-- [Creating the app](creating-the-app.md)
+- [Clone The Project](clone-the-project.md)
 - [Creating the Store](creating-the-store.md)
 - [Subscribers](subscribers.md)
 - [State Resolvers](resolvers.md)
