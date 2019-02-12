@@ -101,7 +101,7 @@ describe('s-is-for-store', () => {
 
     unsubscriber_2()
 
-    await setMessage('Developers do not like AngularJS')
+    await setMessage('Developers do not like jQuery')
 
     expect(mockSubscriber1).toHaveBeenCalledTimes(2)
     expect(mockSubscriber2).toHaveBeenCalledTimes(2)
