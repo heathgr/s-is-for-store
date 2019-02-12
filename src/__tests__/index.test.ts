@@ -23,9 +23,9 @@ describe('s-is-for-store', () => {
   beforeEach(() => {
     testStore = createStore<TestState>(initialState)
 
-    const { resolveState } = testStore
+    const { update: resolve } = testStore
 
-    increment = (by: number) => resolveState((getState) => {
+    increment = (by: number) => resolve((getState) => {
       const state = getState()
 
       return {
@@ -34,7 +34,7 @@ describe('s-is-for-store', () => {
       }
     })
 
-    incrementPromiseBased = (by: number) => resolveState((getState) => {
+    incrementPromiseBased = (by: number) => resolve((getState) => {
       const state = getState()
 
       return new Promise((resolve) => {
@@ -45,8 +45,7 @@ describe('s-is-for-store', () => {
       })
     })
 
-    setMessage = (message: string) => resolveState((getState) => ({
-      ...getState(),
+    setMessage = (message: string) => resolve(() => ({
       message,
     }))
   })

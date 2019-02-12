@@ -1,6 +1,6 @@
 {
   "name": "s-is-for-store",
-  "version": "0.2.1",
+  "version": "2.0.0",
   "description": "A no frills state container written in TypeScript.",
   "main": "lib/index.js",
   "author": "Grant Heath",

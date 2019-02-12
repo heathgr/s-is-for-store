@@ -13,9 +13,15 @@ declare class Store<T> {
      * @param initialState The store's initial state.
      */
     constructor(initialState: T);
+    /**
+     * Returns the current state.
+     * @returns The current state.
+     */
     getState: () => T;
     /**
-     *
+     * Calls the provided callback with the getState function as a parameter.
+     * The state then gets replaced with the value returned by the callback.
+     * @returns The updated state.
      */
     resolveState: (cb: StateResolverCallback<T>) => Promise<T>;
     /**

@@ -2,7 +2,7 @@ export type Subscriber<T> = (state: T) => any
 export type Unsubscriber = () => void
 
 export type GetState<T> = () => T
-export type StateResolverCallback<T> = (getState: GetState<T>) => T | Promise<T>
+export type StateResolverCallback<T> = (getState: GetState<T>) => Partial<T> | Partial<Promise<T>>
 /**
  * A class for a simple no frills state container.
  */
@@ -29,11 +29,14 @@ class Store<T> {
    * The state then gets replaced with the value returned by the callback.
    * @returns The updated state.
    */
-  public resolveState = async (cb: StateResolverCallback<T>) => {
+  public update = async (cb: StateResolverCallback<T>) => {
     const newState = await cb(this.getState)
 
     // update the state
-    this.state = newState
+    this.state = {
+      ...this.state,
+      ...newState,
+    }
 
     // call the subscribers
     await Promise.all(this.subscribers.map(subscriber => subscriber(this.state)))

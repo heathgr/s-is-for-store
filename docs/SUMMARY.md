@@ -1,17 +1,21 @@
 # Documentation
 
+## Introduction
+
+- [What Is S is for Store]()
+- [Motivation]()
+- [Data Flow]()
+
 ## Tutorial
 
 - [Introduction](tutorial-introduction.md)
-- [Clone The Project](clone-the-project.md)
+- [Getting Started](getting-started.md)
 - [Creating the Store](creating-the-store.md)
-- [Subscribers](subscribers.md)
-- [State Resolvers](resolvers.md)
+- [Updating State In Depth](resolvers.md)
 - [Connecting React Components](connecting-react-components.md)
 
 ## Appendix
 
-- [Suggested Design Patterns](suggested-design-patterns.md)
 - [Comparison with Redux](comparison-with-redux.md)
 
 # API
