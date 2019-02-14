@@ -1,17 +1,14 @@
-import { createStore } from 's-is-for-store'
-
-// define the store interface
-interface State { message: string, count: number }
+const { createStore } = require('s-is-for-store')
 
 // create the store
-const store = createStore<State>({ message: '', count: 0 })
+const store = createStore({ message: '', count: 0 })
 
 // expose the update function
 const { update } = store
 
 // define the update functions
-const setMessage = (message: string) => update(() => ({ message }))
-const incrementCount = (by: number) => update((getState) => {
+const setMessage = (message) => update(() => ({ message }))
+const incrementCount = (by) => update((getState) => {
   const { count } = getState()
 
   return {
@@ -20,7 +17,7 @@ const incrementCount = (by: number) => update((getState) => {
 })
 
 // create a listener
-const listener = (state: State) => console.log(state)
+const listener = (state) => console.log(state)
 
 // subscribe to the store
 store.subscribe(listener)

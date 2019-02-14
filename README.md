@@ -4,9 +4,9 @@
 
 S is for Store is a state container for JavaScript applications. It offers straightforward state management with the following features:
 
-- Simple architecture.  Setup projects without having to rely on an oppressive amount of boilerplate.
-- Side effects are easily managed.  Make http requests without having to rely on middleware.
-- Written in TypeScript so type support is available out of the box.
+- Simple architecture.  Setup projects without having to rely on a large amount of boilerplate.
+- Asynchronous operations are easily managed.
+- TypeScript support is available out of the box.
 
 ## Installation
 
@@ -22,43 +22,24 @@ Or via yarn:
 yarn add s-is-for-store
 ```
 
-## Basic Usage
+## Example
+
+> Note: The code for this example is written in TypeScript.  However, S is for Store works just fine with vanilla JavaScript.  If you aren't using TypeScript, a JavaScript example is available in this package's repository at `examples/basic-implementation.js`.
 
 ``` ts
-import { createStore } from '../src/index'
+import { createStore } from 's-is-for-store'
 
-/**
- * This defines the state's interface.
- * This isn't necessary if you aren't using TypeScript.
- * But if you are using TypeScript s-is-for-store offers type support out of the box.
- */
+// define the store interface
 interface State { message: string, count: number }
 
-/**
- * This creates a new store.  The store's initial state is { message: '', count: 0 }
- */
+// create the store
 const store = createStore<State>({ message: '', count: 0 })
 
-/**
- * This exposes the store's update function.
- * The update function is used to update the store's state.
- * The update function is passed a callback that returns the properties and values that will be updated.
- * For example: `update((getState) => ({ message: ':)'}))` would update the state
- * to the following `{ message: ':)', count: 0 }`
- */
+// expose the update function
 const { update } = store
 
-/**
- * The setMessage function wraps the update function.
- * Calling `setMessage`, would update the state's message property.
- */
+// define the update functions
 const setMessage = (message: string) => update(() => ({ message }))
-
-/**
- * When update is passed a callback, that callback gets passed a getState function.
- * This is important in situations where you need to know the current state before you update it.
- * The `incrementCount` function increments the state's count property by the specified amount.
- */
 const incrementCount = (by: number) => update((getState) => {
   const { count } = getState()
 
@@ -67,16 +48,13 @@ const incrementCount = (by: number) => update((getState) => {
   }
 })
 
-/**
- * The subscriber function gets passed the current state.
- * That state is then outputted to the console.
- */
-const subscriber = (state: State) => console.log(state)
+// create a listener
+const listener = (state: State) => console.log(state)
 
-/**
- * The subscriber function is now subscribed to the store.
- */
-store.subscribe(subscriber)
+// subscribe to the store
+store.subscribe(listener)
+
+// run the update functions
 
 setMessage('Hello World.')
 // Outputs { message: 'Hello World', count: 0 }
@@ -89,8 +67,152 @@ incrementCount(4)
 
 incrementCount(2)
 // Outputs { message: 'Hello Again', count: 6 }
+
 ```
 
-## A Note to 0.x.x Users
+## Core Concepts
 
-Version 1.0.0 introduces the concept of state resolvers.  Moving forward state resolvers are going to be the only way to modify state.  As such the `setState` method has been removed.
+There are several concepts that are key to understanding S is for Store:
+
+1. Store creation.
+2. Updating state.
+3. Responding to state changes.
+
+This documentation will address each of these in more depth.
+
+## Store Creation
+
+First, import  the `createStore` function:
+
+``` ts
+import { createStore } from 's-is-for-store'
+```
+
+If you are using TypeScript, define the interface for your store.  In the above example that store implements this interface:
+
+``` ts
+interface State { message: string, count: number }
+```
+
+Create a new store with the `createStore` function.  The createStore function takes the store's initial state as a parameter.
+
+``` ts
+const store = createStore<State>({ message: '', count: 0 })
+```
+
+The newly created store has three functions getState, update, and subscribe.  Each of these functions will be described in more detail in the following sections.
+
+## Updating State
+
+Updating the store's state is done with the update function. The update function takes an executor function as a parameter.  The executor needs to return one of two things:
+
+1. An object containing the updated state values.
+2. A promise that will resolve the updated state values.
+
+For example, the following code would change the state's message property to 'Hello :)':
+
+``` ts
+store.update((getState) => ({ message: 'Hello :)' }))
+```
+
+The executor is passed a getState function.  As the name implies, getState returns the value of the current state.  In the above example, getState is never used.  So, the function could be rewritten as follows:
+
+``` ts
+store.update(() => ({ message: 'Hello :)' }))
+```
+
+> Note: The getState function is also available on the store object itself.  So, `store.getState()` is another way retrieve the current state.
+
+In the example code, the update function is always wrapped into a higher order function.  In order to do this, first expose the update function:
+
+``` ts
+const { update } = store
+```
+
+This makes it easier for another function to call update.  Like in the `incrementCount` function:
+
+``` ts
+const incrementCount = (by: number) => update((getState) => {
+  const { count } = getState()
+
+  return {
+    count: count + by,
+  }
+})
+```
+
+When `incrementCount` gets called, it is passed a number and then returns a call to `update`.  The executor passed to update gets the current count value and increments it by the number passed to `incrementCount`.
+
+Following this pattern makes it easy to write reusable update functions.  These functions can be used wherever needed in your application.
+
+## Responding to State Updates
+
+Whenever the state updates, any listener functions that are subscribed to the store get called with the new state.
+
+In the original code example, the listener function simply logs the new state to the console:
+
+``` ts
+const listener = (state: State) => console.log(state)
+```
+
+For this listener function to get called, it needs to be subscribed to the store:
+
+``` ts
+store.subscribe(listener)
+```
+
+There are cases where a listener may need to unsubscribe from a store.  When the subscribe function gets called, it returns an unsubscribe function:
+
+``` ts
+const unsubscribe = store.subscribe(listener)
+```
+
+Calling the unsubscribe function will unsubscribe the listener.  It will no longer get called when the state updates.
+
+``` ts
+unsubscribe()
+// lister is no longer subscribed
+```
+
+## Asynchronous Updates
+
+As mentioned before, executor functions can return a promise.  This means that an executor function can be an async function.  This makes it easy to handle asynchronous tasks such as HTTP requests:
+
+``` ts
+const getUser = (userId: string) => update( async () {
+  const userRequest = await fetch(`https:/some/api/${userId}`)
+  const user = await userRequest.json()
+
+  return {
+    user
+  }
+})
+```
+
+## Usage With React
+
+If you want to use S is for Store with React there are React bindings available.  However, they need to be installed separately from S is for Store:
+
+```
+npm install @s-is-for-store/react --save
+```
+
+Using the React bindings is very straight forward.  It follows a pattern similar to a context consumer:
+
+``` ts
+import { StoreProvider } from '@s-is-for-store/react'
+
+// The store prop should be passed an instance of a store
+// <StateInterface> is TypeScript syntax.  It is letting the  StoreProvider component know what interface your store implements.
+const MyComponent = () => (
+  <StoreProvider<StateInterface> store={someStore}>
+    {
+      (state) => (
+        /* render something based on the state */
+      )
+    }
+  </StoreProvider>
+)
+```
+
+> Note: The React bindings are likely to change in the near future.  A solution that uses hooks is being worked on.
