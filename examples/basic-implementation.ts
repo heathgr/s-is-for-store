@@ -7,17 +7,15 @@ interface State { message: string, count: number }
 const store = createStore<State>({ message: '', count: 0 })
 
 // expose the update function
-const { update } = store
+const { current, update } = store
 
 // define the update functions
-const setMessage = (message: string) => update(() => ({ message }))
-const incrementCount = (by: number) => update((getState) => {
-  const { count } = getState()
+const setMessage = (message: string) => update({ message })
+const incrementCount = (by: number) => {
+  const state = current()
 
-  return {
-    count: count + by,
-  }
-})
+  return update({ count: state.count + by })
+}
 
 // create a listener
 const listener = (state: State) => console.log(state)
