@@ -5,10 +5,9 @@
 S is for Store is a state container for JavaScript applications. It offers straightforward state management with the following features:
 
 - Simple architecture.  Setup projects without having to rely on a large amount of boilerplate.
-- Asynchronous operations are easily managed.
 - TypeScript support is available out of the box.
 
-## Installation
+# Installation
 
 Install via npm:
 
@@ -22,7 +21,7 @@ Or via yarn:
 yarn add s-is-for-store
 ```
 
-## Example
+# Basic Example
 
 > Note: The code for this example is written in TypeScript.  However, S is for Store works just fine with vanilla JavaScript.  If you aren't using TypeScript, a JavaScript example is available in this package's repository at `examples/basic-implementation.js`.
 
@@ -36,17 +35,15 @@ interface State { message: string, count: number }
 const store = createStore<State>({ message: '', count: 0 })
 
 // expose the update function
-const { update } = store
+const { current, update } = store
 
 // define the update functions
-const setMessage = (message: string) => update(() => ({ message }))
-const incrementCount = (by: number) => update((getState) => {
-  const { count } = getState()
+const setMessage = (message: string) => update({ message })
+const incrementCount = (by: number) => {
+  const state = current()
 
-  return {
-    count: count + by,
-  }
-})
+  return update({ count: state.count + by })
+}
 
 // create a listener
 const listener = (state: State) => console.log(state)
@@ -70,17 +67,15 @@ incrementCount(2)
 
 ```
 
-## Core Concepts
+# Core Concepts
 
-There are several concepts that are key to understanding S is for Store:
+When using S is for Store you'll most likely be doing one of the following:
 
-1. Store creation.
-2. Updating state.
-3. Responding to state changes.
+1. Creating a store.
+2. Updating a store.
+3. Handeling changes to a store.
 
-This documentation will address each of these in more depth.
-
-## Store Creation
+## Creating a Store
 
 First, import  the `createStore` function:
 
@@ -100,52 +95,25 @@ Create a new store with the `createStore` function.  The createStore function ta
 const store = createStore<State>({ message: '', count: 0 })
 ```
 
-The newly created store has three functions getState, update, and subscribe.  Each of these functions will be described in more detail in the following sections.
+##  Updating a Store
 
-## Updating State
+Updating state is done with the update function. The update function is passed an object that contains the fragments of state that will be updated.
 
-Updating the store's state is done with the update function. The update function takes an executor function as a parameter.  The executor needs to return one of two things:
-
-1. An object containing the updated state values.
-2. A promise that will resolve the updated state values.
-
-For example, the following code would change the state's message property to 'Hello :)':
+In the above example calls to update are wrapped in update functions:
 
 ``` ts
-store.update({ message: 'Hello :)' })
+// define the update functions
+const setMessage = (message: string) => update({ message })
+const incrementCount = (by: number) => {
+  const state = current()
+
+  return update({ count: state.count + by })
+}
 ```
 
-The executor is passed a getState function.  As the name implies, getState returns the value of the current state.  In the above example, getState is never used.  So, the function could be rewritten as follows:
+It isn't neccessary to follow this pattern.  However following it can be useful in situations where additional logic is needed to set the state.  An example of this is the incrementCount function which updates the count based on the value of the previous state.
 
-``` ts
-store.update({ message: 'Hello :)' })
-```
-
-> Note: The getState function is also available on the store object itself.  So, `store.getState()` is another way retrieve the current state.
-
-In the example code, the update function is always wrapped into a higher order function.  In order to do this, first expose the update function:
-
-``` ts
-const { update } = store
-```
-
-This makes it easier for another function to call update.  Like in the `incrementCount` function:
-
-``` ts
-const incrementCount = (by: number) => update((getState) => {
-  const { count } = getState()
-
-  return {
-    count: count + by,
-  }
-})
-```
-
-When `incrementCount` gets called, it is passed a number and then returns a call to `update`.  The executor passed to update gets the current count value and increments it by the number passed to `incrementCount`.
-
-Following this pattern makes it easy to write reusable update functions.  These functions can be used wherever needed in your application.
-
-## Responding to State Updates
+## Handeling changes to a store.
 
 Whenever the state updates, any listener functions that are subscribed to the store get called with the new state.
 
@@ -160,6 +128,8 @@ For this listener function to get called, it needs to be subscribed to the store
 ``` ts
 store.subscribe(listener)
 ```
+
+### Unsubscribing
 
 There are cases where a listener may need to unsubscribe from a store.  When the subscribe function gets called, it returns an unsubscribe function:
 
