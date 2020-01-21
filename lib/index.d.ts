@@ -17,18 +17,20 @@ declare class Store<T> {
      * Returns the current state.
      * @returns The current state.
      */
-    getState: () => T;
+    current: () => T;
     /**
-     * Calls the provided callback with the getState function as a parameter.
-     * The state then gets replaced with the value returned by the callback.
+     * Updates the state with the provided values.
+     * @param newState The new state values.
      * @returns The updated state.
      */
-    update: (cb: StateResolverCallback<T>) => Promise<T>;
+    update: (newState: Partial<T>) => T;
     /**
-     * Adds an update handler, a function that gets called when the state updates.
-     * An unsubscribe function gets returned.
+     * Adds a listener function that gets called whenever the state updates.
+     * @param subscriber The listener function.
+     * @param invokeOnSubscribe If set to true, the listener function will immediatley be called once it has been subscribed.  The default is false.
+     * @returns An unsubscribe function that will unsubscribe the listener when called.
      */
-    subscribe: (subscriber: Subscriber<T>) => Unsubscriber;
+    subscribe: (subscriber: Subscriber<T>, invokeOnSubscribe?: boolean) => Unsubscriber;
 }
 /**
  * Returns a new store object.  A convenience function that is the equivalent to `new Store<T>(initialState)`.
