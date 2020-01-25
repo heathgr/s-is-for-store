@@ -1,20 +1,18 @@
-const { createStore } = require('s-is-for-store')
+import { createStore } from 's-is-for-store'
 
 // create the store
 const store = createStore({ message: '', count: 0 })
 
 // expose the update function
-const { update } = store
+const { current, update } = store
 
 // define the update functions
-const setMessage = (message) => update(() => ({ message }))
-const incrementCount = (by) => update((getState) => {
-  const { count } = getState()
+const setMessage = (message) => update({ message })
+const incrementCount = (by) => {
+  const state = current()
 
-  return {
-    count: count + by,
-  }
-})
+  return update({ count: state.count + by })
+}
 
 // create a listener
 const listener = (state) => console.log(state)
@@ -35,3 +33,4 @@ incrementCount(4)
 
 incrementCount(2)
 // Outputs { message: 'Hello Again', count: 6 }
+

@@ -1,6 +1,6 @@
 {
   "name": "s-is-for-store",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "A no frills state container written in TypeScript.",
   "main": "lib/index.js",
   "author": "Grant Heath",
@@ -30,11 +30,11 @@
     "async"
   ],
   "devDependencies": {
-    "@types/jest": "^23.3.12",
-    "jest": "^23.6.0",
-    "s-is-for-store": "^2.0.0",
-    "ts-jest": "^23.10.5",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.2.2"
+    "@types/jest": "^24.9.0",
+    "jest": "^24.9.0",
+    "s-is-for-store": "^3.0.0",
+    "ts-jest": "^24.3.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
   }
 }
