@@ -6,7 +6,7 @@ export type StateResolverCallback<T> = (getState: GetState<T>) => Partial<T> | P
 /**
  * A class for a simple no frills state container.
  */
-class Store<T> {
+export class Store<T> {
   private state: T
   private subscribers: Subscriber<T>[] = []
 
