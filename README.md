@@ -143,3 +143,34 @@ Calling the unsubscribe function will unsubscribe the listener.  It will no long
 unsubscribe()
 // lister is no longer subscribed
 ```
+
+## Using With React
+
+There is a React hook that's available for S is for Store.  It can be installed via npm:
+
+``` shell
+npm install @s-is-for-store/react
+```
+
+Or via yarn:
+
+``` shell
+yarn add @s-is-for-store/react
+```
+
+Using the hook is very straightforward:
+
+``` ts
+import React from 'react'
+import exampleStore from './wherever/your/store/is/defined/'
+import { useStore } from '@s-is-for-store/react'
+
+const ExampleComponent: React.FC = () => {
+  const store = useStore(exampleStore)
+
+  return <div>
+    <h1>This component uses the s is for store hook and will rerender whenever the store is updated.</h1>
+    <p>{store.someValueToDisplay}</p>
+  </div>
+}
+```
