@@ -7,95 +7,75 @@ describe('s-is-for-store', () => {
     count: number,
   }
 
+  const testState: TestState = {
+    message: 'hello world',
+    count: 0,
+  }
+
   it('Should have a createStore function for creating a new store.', () => {
-    const subject = createStore<{ message: String }>({ message: 'Test store!!' })
+    const subject = createStore(testState)
 
     expect(subject).toBeInstanceOf(Store)
   })
 
   it('Should have a current function that returns the current state.', () => {
-    interface TestState {
-      count: number
-      message: string
-    }
-
-    const testState: TestState = {
-      count: 5,
-      message: 'Just a test!!!'
-    }
-
     const subject = createStore<TestState>(testState)
 
     expect(subject.current()).toEqual(testState)
   })
 
   it('Should have an update function that updates the specified state.', () => {
-    interface TestState {
-      a: number
-      b: string
-      c: number
-    }
 
-    const subject = createStore<TestState>({ a: 2, b: ':(', c: 12 })
+    const subject = createStore<TestState>(testState)
 
-    subject.update({ a: 7 })
-    expect(subject.current()).toEqual({ a: 7, b: ':(', c: 12})
+    subject.update({ message: 'hello universe' })
+    expect(subject.current()).toEqual({ count: 0, message: 'hello universe' })
 
-    subject.update({b: ':)'})
-    expect(subject.current()).toEqual({ a: 7, b: ':)', c: 12})
+    subject.update({count: 10})
+    expect(subject.current()).toEqual({ count: 10, message: 'hello universe' })
   })
 
   it('Should call listeners when the state has changed.', () => {
-    interface TestState {
-      message: string
-    }
-
     const subject = jest.fn()
     const listener = (state: TestState) => {
       subject(state)
     }
-    const store = createStore<TestState>({ message: 'Hello!'})
+    const store = createStore(testState)
     
     store.subscribe(listener)
     expect(subject).toHaveBeenCalledTimes(0)
 
     store.update({ message: 'Good Bye!'})
-    expect(subject).toHaveBeenCalledWith({ message: 'Good Bye!'})
+
+    expect(subject).toHaveBeenCalledWith({ message: 'Good Bye!', count: 0 })
     expect(subject).toHaveBeenCalledTimes(1)
   })
 
   it('Should be able to immediately call a listener when it has subscribed.', () => {
-    interface TestState {
-      message: string
-    }
-
     const subject = jest.fn()
     const listener = (state: TestState) => {
       subject(state)
     }
-    const store = createStore<TestState>({ message: 'Hello!'})
+    const store = createStore(testState)
     
     store.subscribe(listener, true)
-    expect(subject).toHaveBeenCalledWith({ message: 'Hello!'})
+    expect(subject).toHaveBeenCalledWith(testState)
     expect(subject).toHaveBeenCalledTimes(1)
   })
 
   it('Returns a function used to unsubscribe a listener when subscribe is called.', () => {
-    interface TestState {
-      message: string
-    }
-
     const subject = jest.fn()
     const listener = (state: TestState) => {
       subject(state)
     }
-    const store = createStore<TestState>({ message: 'Hello!'})
+    const store = createStore(testState)
     
     const unsubscribe = store.subscribe(listener)
+
     expect(subject).toHaveBeenCalledTimes(0)
 
     store.update({ message: 'Good Bye!'})
-    expect(subject).toHaveBeenCalledWith({ message: 'Good Bye!'})
+    expect(subject).toHaveBeenCalledWith({ message: 'Good Bye!', count: 0 })
     expect(subject).toHaveBeenCalledTimes(1)
 
     unsubscribe()
