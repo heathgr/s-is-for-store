@@ -3,9 +3,9 @@ export declare type Unsubscriber = () => void;
 export declare type GetState<T> = () => T;
 export declare type StateResolverCallback<T> = (getState: GetState<T>) => Partial<T> | Partial<Promise<T>>;
 /**
- * A class for a simple no frills state container.
+ * A class an S is Store state container.
  */
-declare class Store<T> {
+export declare class Store<T> {
     private state;
     private subscribers;
     /**
@@ -31,6 +31,11 @@ declare class Store<T> {
      * @returns An unsubscribe function that will unsubscribe the listener when called.
      */
     subscribe: (subscriber: Subscriber<T>, invokeOnSubscribe?: boolean) => Unsubscriber;
+    /**
+     * Will unsubscribes all listener functions.
+     * @returns
+     */
+    unsubscribeAll: () => void;
 }
 /**
  * Returns a new store object.  A convenience function that is the equivalent to `new Store<T>(initialState)`.

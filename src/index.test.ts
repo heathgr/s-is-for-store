@@ -64,7 +64,7 @@ describe('s-is-for-store', () => {
     expect(subject).toHaveBeenCalledTimes(1)
   })
 
-  it('Should immediately call a listener when it has subscribed, if directed.', () => {
+  it('Should be able to immediately call a listener when it has subscribed.', () => {
     interface TestState {
       message: string
     }
@@ -80,7 +80,7 @@ describe('s-is-for-store', () => {
     expect(subject).toHaveBeenCalledTimes(1)
   })
 
-  it('Should be able to unsubscribe a listener', () => {
+  it('Returns a function used to unsubscribe a listener when subscribe is called.', () => {
     interface TestState {
       message: string
     }
@@ -102,5 +102,30 @@ describe('s-is-for-store', () => {
 
     store.update({ message: 'Hello Again!'})
     expect(subject).toHaveBeenCalledTimes(1)
+  })
+
+  it('Unsubscribes all listeners when unsubscribe all is called.', () => {
+    const listener1 = jest.fn()
+    const listener2 = jest.fn()
+
+    const store = createStore<TestState>({
+      message: "hello",
+      count: 0,
+    })
+
+    store.subscribe(listener1)
+    store.subscribe(listener2)
+
+    store.update({ count: 1 })
+
+    expect(listener1).toHaveBeenCalledTimes(1)
+    expect(listener2).toHaveBeenCalledTimes(1)
+
+    store.unsubscribeAll()
+
+    store.update({ count: 2 })
+
+    expect(listener1).toHaveBeenCalledTimes(1)
+    expect(listener2).toHaveBeenCalledTimes(1)
   })
 })

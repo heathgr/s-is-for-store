@@ -4,7 +4,7 @@ export type Unsubscriber = () => void
 export type GetState<T> = () => T
 export type StateResolverCallback<T> = (getState: GetState<T>) => Partial<T> | Partial<Promise<T>>
 /**
- * A class for a simple no frills state container.
+ * A class an S is Store state container.
  */
 export class Store<T> {
   private state: T
@@ -59,6 +59,14 @@ export class Store<T> {
     return () => {
       this.subscribers = this.subscribers.filter(item => item !== subscriber)
     }
+  }
+
+  /**
+   * Will unsubscribes all listener functions.
+   * @returns 
+   */
+  public unsubscribeAll = (): void => {
+    this.subscribers = []
   }
 }
 
