@@ -1,6 +1,6 @@
 # S is for Store
 
-[![CircleCI](https://circleci.com/gh/heathgr/s-is-for-store.svg?style=svg)](https://circleci.com/gh/heathgr/s-is-for-store)
+![Build Status](https://github.com/heathgr/s-is-for-store/workflows/build/badge.svg)
 
 S is for Store is a state container for JavaScript applications. It offers straightforward state management with the following features:
 
