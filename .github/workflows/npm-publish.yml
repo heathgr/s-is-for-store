@@ -14,10 +14,15 @@ jobs:
       uses: actions/setup-node@master
       with:
         node-version: 10.0.0
-    - run: npm ci
-    - run: npm run-script build
-    - run: npm test
-    - run: npm publish
+    - name: Install dependencies
+      run: npm ci
+    - name: Build Package
+      run: npm run-script build
+    - name: Test
+      run: npm test
+    - name: Publish
+      run: npm publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        CI: true
