@@ -21,8 +21,15 @@ jobs:
       run: npm run-script build
     - name: Test
       run: npm test
+    - name: GetPublishedVersion
+      id: publishedversion
+      run: echo "::set-output name=version::$(npm view s-is-for-store version)"
+    - name: GetRepoVersion
+      id: repoversion
+      run: echo "::set-output name=version::$(grep version package.json | cut -c 15- | rev | cut -c 3- | rev)"
     - name: Publish
       run: npm publish
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      if: ${{ steps.publishedversion.outputs.version < steps.repoversion.outputs.version }}
