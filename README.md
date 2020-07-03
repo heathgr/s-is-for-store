@@ -23,7 +23,7 @@ yarn add s-is-for-store
 
 # Basic Example
 
-> Note: The code for this example is written in TypeScript.  However, S is for Store works just fine with vanilla JavaScript.  If you aren't using TypeScript, a JavaScript example is available in this package's repository at `examples/basic-implementation.js`.
+> Note: The code for this example is written in TypeScript.  However, S is for Store works just fine with plain JavaScript.  If you aren't using TypeScript, a JavaScript example is available in this package's repository at `examples/basic-implementation.js`.
 
 ``` ts
 import { createStore } from 's-is-for-store'
@@ -34,10 +34,10 @@ interface State { message: string, count: number }
 // create the store
 const store = createStore<State>({ message: '', count: 0 })
 
-// expose the update function
+// expose the update  and current functions
 const { current, update } = store
 
-// define the update functions
+// define the updater functions
 const setMessage = (message: string) => update({ message })
 const incrementCount = (by: number) => {
   const state = current()
@@ -69,11 +69,12 @@ incrementCount(2)
 
 # Core Concepts
 
-When using S is for Store you'll most likely be doing one of the following:
+When using S is for Store you'll be performing one of the following operations:
 
-1. Creating a store.
-2. Updating a store.
-3. Handeling changes to a store.
+- Creating a store.
+- Updating a store.
+- Subscribing to a store.
+- Unsubscribing from a store.
 
 ## Creating a Store
 
@@ -97,9 +98,9 @@ const store = createStore<State>({ message: '', count: 0 })
 
 ##  Updating a Store
 
-Updating state is done with the update function. The update function is passed an object that contains the fragments of state that will be updated.
+Updating state is accomplished by calling the store's update function. The update function is passed an object that contains the properties of state that will be updated.
 
-In the above example calls to update are wrapped in update functions:
+In the above example calls to update are wrapped in an updater functions:
 
 ``` ts
 // define the update functions
@@ -110,8 +111,6 @@ const incrementCount = (by: number) => {
   return update({ count: state.count + by })
 }
 ```
-
-It isn't neccessary to follow this pattern.  However following it can be useful in situations where additional logic is needed to set the state.  An example of this is the incrementCount function which updates the count based on the value of the previous state.
 
 ## Handeling changes to a store.
 
@@ -131,7 +130,7 @@ store.subscribe(listener)
 
 ### Unsubscribing
 
-There are cases where a listener may need to unsubscribe from a store.  When the subscribe function gets called, it returns an unsubscribe function:
+When the subscribe function gets called, it returns an unsubscribe function:
 
 ``` ts
 const unsubscribe = store.subscribe(listener)
@@ -144,7 +143,9 @@ unsubscribe()
 // lister is no longer subscribed
 ```
 
-## Using With React
+Calling the store's unsubscribeAll function will unsubscribe all listeners.
+
+## Usage With React
 
 There is a React hook that's available for S is for Store.  It can be installed via npm:
 
@@ -174,3 +175,7 @@ const ExampleComponent: React.FC = () => {
   </div>
 }
 ```
+
+## More resources
+
+A simple example app is available at [https://github.com/heathgr/s-is-for-store-example.git](https://github.com/heathgr/s-is-for-store-example.git).  It deomonstrates how an S is for Store app can be used with React and tested.
