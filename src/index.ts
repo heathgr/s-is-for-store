@@ -63,7 +63,6 @@ export class Store<T> {
 
   /**
    * Will unsubscribes all listener functions.
-   * @returns 
    */
   public unsubscribeAll = (): void => {
     this.subscribers = []
