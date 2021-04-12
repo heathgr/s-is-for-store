@@ -33,7 +33,6 @@ export declare class Store<T> {
     subscribe: (subscriber: Subscriber<T>, invokeOnSubscribe?: boolean) => Unsubscriber;
     /**
      * Will unsubscribes all listener functions.
-     * @returns
      */
     unsubscribeAll: () => void;
 }

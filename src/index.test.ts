@@ -5,11 +5,18 @@ describe('s-is-for-store', () => {
   interface TestState {
     message: string,
     count: number,
+    extra?: boolean,
   }
 
   const testState: TestState = {
     message: 'hello world',
     count: 0,
+  }
+
+  const testStateExtra: TestState = {
+    message: ':)',
+    count: 55,
+    extra: true,
   }
 
   it('Should have a createStore function for creating a new store.', () => {
@@ -33,6 +40,14 @@ describe('s-is-for-store', () => {
 
     subject.update({count: 10})
     expect(subject.current()).toEqual({ count: 10, message: 'hello universe' })
+  })
+
+  it('Should have a replace function that replaces the entire state.', () => {
+
+    const subject = createStore<TestState>(testStateExtra)
+
+    subject.replace({ message: 'hello universe', count: -10 })
+    expect(subject.current()).toEqual({ count: -10, message: 'hello universe' })
   })
 
   it('Should call listeners when the state has changed.', () => {

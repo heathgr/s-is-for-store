@@ -41,6 +41,21 @@ export class Store<T> {
 
     return this.state
   }
+  
+  /**
+   * Replaces the current state with the provided new state.
+   * @param newState The new state.
+   * @returns The new state
+   */
+  public replace = (newState: T) => {
+    this.state = {
+      ...newState,
+    }
+
+    this.subscribers.map(subscriber => subscriber(this.state))
+
+    return this.state
+  }
 
   /**
    * Adds a listener function that gets called whenever the state updates.
